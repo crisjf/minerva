@@ -1,1 +1,2 @@
 -e git://github.com/CityScope/CS_Brix.git@grid_update#egg=cs_brix
+jenkspy==0.2.0
