@@ -3,6 +3,10 @@ import numpy as np
 from brix import Indicator
 
 class Giants(Indicator):
+    '''
+    Indicator that simulates the benefit that university researchers get from being in close proximity to private R&D.
+    User can change location of academic departments and of private R&D labs, and the module will compute the research output of academia and display it as the height of each cell.
+    '''
     def setup(self,quietly=True):
         self.quietly = quietly
         if not self.quietly:
@@ -26,8 +30,12 @@ class Giants(Indicator):
         self.private_types  = set(['Private R&D'])
         
     def make_dis_df(self,geogrid_data):
+        '''
+        Initialize a dataframe with distances between all pairs of cells.
+        This takes a bit, but makes updates run faster.
+        '''
         if not self.quietly:
-            print('Calculating distances between cells')
+            print('Calculating distances between cells (may take a bit)')
         geogrid_data_df = geogrid_data.as_df()
         dis = geogrid_data_df[['id','geometry']]
         dis = dis.to_crs(self.local_crs)
@@ -39,6 +47,9 @@ class Giants(Indicator):
         self.dis = dis[['id_x','id_y','distance']]
         
     def return_indicator(self,geogrid_data):
+        '''
+        Returns the geogrid_data object to be posted to cityio.
+        '''
         if self.dis is None:
             self.make_dis_df(geogrid_data)
         final_height_lookup = self.propagate_spillovers(geogrid_data)
@@ -56,6 +67,11 @@ class Giants(Indicator):
         return geogrid_data
 
     def propagate_spillovers(self,geogrid_data):
+        '''
+        Main function of the indicator.
+        Calculates exposures and uses the model parameters to simulate the effect on university research.
+        Returns a dictionary with cell ids as keys and the simulated research output as values.
+        '''
         if not self.quietly:
             print('Propagating spillovers')
         geogrid_data_df = geogrid_data.as_df()
