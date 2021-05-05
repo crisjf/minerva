@@ -140,14 +140,17 @@ class Giants(Indicator):
         '''
         Sets the breaks to be used to color cells.
         '''
-        if self.color_method == 'jenks':
-            breaks = jenkspy.jenks_breaks(final_height_lookup.values(), nb_class=self.n_colors)
-            self.breaks = np.array(breaks)
-        elif self.color_method == 'quantile':
-            breaks = [np.quantile(list(final_height_lookup.values()),q) for q in np.linspace(0,1,self.n_colors+1)]
-            self.breaks = np.array(breaks)
+        if len(final_height_lookup)>0:
+            if self.color_method == 'jenks':
+                breaks = jenkspy.jenks_breaks(final_height_lookup.values(), nb_class=self.n_colors)
+                self.breaks = np.array(breaks)
+            elif self.color_method == 'quantile':
+                breaks = [np.quantile(list(final_height_lookup.values()),q) for q in np.linspace(0,1,self.n_colors+1)]
+                self.breaks = np.array(breaks)
+            else:
+                self.breaks = None
         else:
-            self.breaks = None        
+            self.breaks = None
     
     def get_color(self,h):
         '''
